@@ -2,8 +2,19 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE OverloadedStrings          #-}
 {-# LANGUAGE TemplateHaskell            #-}
-{-# LANGUAGE CPP #-}
-module Database.InfluxDB.Simple.Classy.Types where
+module Database.InfluxDB.Simple.Classy.Types
+  ( InfluxRqType (..)
+  , ToLine (..)
+  , IsDb (..)
+  , InfluxQuery (..)
+  , InfluxDBConfig (..)
+  , HasInfluxDBConfig (..)
+  , InfluxDbError (..)
+  , AsInfluxDbError (..)
+  , CanInflux
+  , basicInfluxOpts
+  , rqWinCode
+  ) where
 
 import           Control.Exception      (SomeException)
 import           Control.Lens           (makeClassy, makeClassyPrisms, (.~),
@@ -18,10 +29,8 @@ import           Data.Function          ((&))
 
 import           Data.Text              (Text)
 
-#if VERSION_vector
 import           Data.Vector            (Vector)
 import qualified Data.Vector            as V
-#endif
 
 import           GHC.Word               (Word32)
 
@@ -45,16 +54,11 @@ class ToLine a where
 instance ToLine a => ToLine [a] where
   toLine = BS8.unlines . fmap toLine
 
-#if VERSION_vector
 instance ToLine a => ToLine (Vector a) where
   toLine = BS8.unlines . V.toList . fmap toLine
-#endif
 
 class IsDb a where
   toDbName :: a -> Text
-
-newtype Count = Count Word32
-  deriving (Eq, Show, Ord, Num)
 
 newtype InfluxQuery = InfluxQuery ByteString
   deriving (Eq, Show)
