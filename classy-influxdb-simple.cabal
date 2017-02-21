@@ -1,5 +1,5 @@
 name:                classy-influxdb-simple
-version:             0.1.0.2
+version:             0.1.0.3
 synopsis:            Super simple InfluxDB package in Classy-MTL style
 -- description:
 homepage:            https://github.com/mankyKitty/classy-influxdb-simple#readme
