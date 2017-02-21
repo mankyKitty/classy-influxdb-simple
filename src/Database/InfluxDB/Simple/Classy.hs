@@ -63,6 +63,10 @@ runInflux act rq resFn = do
   r <- runAsyncToE act (UnknownError rq)
   either (throwing _InfluxDbError) (handleSuccess rq resFn) r
 
+-- |
+-- Push some new data to Influx.
+-- The @ToLine@ typeclass isn't safe at the moment, so you're on your own
+-- when it comes to meeting the Line Protocol requirements for InfluxDB
 writeData
   :: ( CanInflux m e
      , IsDb db
@@ -78,6 +82,16 @@ writeData c db l =
     win = pure . const ()
     o = basicInfluxOpts W.defaults c db
 
+-- |
+-- Ask Influx for some data and return any results in CSV format:
+-- Query:
+-- curl -H "Accept: application/csv" -G 'http://localhost:8086/query?db=mydb' --data-urlencode 'q=SELECT * FROM "mymeas" LIMIT 3'
+--
+-- Result:
+-- name,tags,time,tag1,tag2,value
+-- mymeas,,1478030187213306198,blue,tag2,23
+-- mymeas,,1478030189872408710,blue,tag2,44
+-- mymeas,,1478030203683809554,blue,yellow,101
 queryDataToCSV
   :: ( CanInflux m e
      , IsDb db
@@ -93,6 +107,9 @@ queryDataToCSV c db (InfluxQuery q) =
       & W.param "q" .~ [Text.decodeUtf8 q]
       & W.header "Accept" .~ ["application/csv"]
 
+-- |
+-- Ask Influx for some data or run a Downsample query. The queries are not
+-- type safe or verified for correctness, you're in the wild west here.
 queryData
   :: ( CanInflux m e
      , IsDb db
