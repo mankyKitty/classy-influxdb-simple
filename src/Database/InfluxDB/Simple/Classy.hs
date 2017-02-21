@@ -6,7 +6,6 @@ module Database.InfluxDB.Simple.Classy
   , queryDataToCSV
   ) where
 
-
 import           Control.Lens                          (to, view, (.~), (^.))
 import           Control.Monad.Error.Lens              (throwing)
 
