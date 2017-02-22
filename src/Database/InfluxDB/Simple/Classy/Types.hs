@@ -11,32 +11,39 @@ module Database.InfluxDB.Simple.Classy.Types
   , HasInfluxDBConfig (..)
   , InfluxDbError (..)
   , AsInfluxDbError (..)
+  , Precision (..)
+  , AsPrecision (..)
   , CanInflux
   , basicInfluxOpts
   , rqWinCode
   ) where
 
-import           Control.Exception      (SomeException)
-import           Control.Lens           (makeClassy, makeClassyPrisms, (.~),
-                                         (?~), (^.))
-import           Control.Monad.Except   (MonadError)
-import           Control.Monad.IO.Class (MonadIO)
+import           Control.Exception                               (SomeException)
+import           Control.Lens                                    (makeClassy, makeClassyPrisms,
+                                                                  prism', re,
+                                                                  (.~), (?~),
+                                                                  (^.))
+import           Control.Monad.Except                            (MonadError)
+import           Control.Monad.IO.Class                          (MonadIO)
 
-import           Data.ByteString        (ByteString)
-import qualified Data.ByteString.Char8  as BS8
+import           Data.ByteString                                 (ByteString)
+import qualified Data.ByteString.Char8                           as BS8
+import           Data.String                                     (IsString (..))
 
-import           Data.Function          ((&))
+import           Data.Function                                   ((&))
 
-import           Data.Text              (Text)
+import           Data.Text                                       (Text)
 
-import           Data.Vector            (Vector)
-import qualified Data.Vector            as V
+import           Data.Vector                                     (Vector)
+import qualified Data.Vector                                     as V
 
-import           GHC.Word               (Word32)
+import           GHC.Word                                        (Word32)
 
-import           Network.Wreq           (Options)
-import qualified Network.Wreq           as W
+import           Network.Wreq                                    (Options)
+import qualified Network.Wreq                                    as W
 
+import           Database.InfluxDB.Simple.Classy.Types.Precision (AsPrecision (..),
+                                                                  Precision (..))
 -- |
 -- Used to differentiate what action we were trying to perform on the InfluxDB
 -- when an error occurred.
@@ -111,9 +118,11 @@ basicInfluxOpts
   => Options
   -> InfluxDBConfig
   -> a
+  -> Precision
   -> Options
-basicInfluxOpts o env db = o
+basicInfluxOpts o env db prec = o
   & W.param "db" .~ [toDbName db]
+  & W.param "precision" .~ [prec ^. re _Precision]
   & W.auth ?~ W.basicAuth user' pass'
   where
     user' = env ^. idbUser

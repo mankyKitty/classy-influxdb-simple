@@ -1,5 +1,5 @@
 name:                classy-influxdb-simple
-version:             0.1.0.4
+version:             0.2.0.0
 synopsis:            Super simple InfluxDB package in Classy-MTL style
 -- description:
 homepage:            https://github.com/mankyKitty/classy-influxdb-simple#readme
@@ -17,6 +17,7 @@ library
   hs-source-dirs:      src
   exposed-modules:     Database.InfluxDB.Simple.Classy
                      , Database.InfluxDB.Simple.Classy.Types
+                     , Database.InfluxDB.Simple.Classy.Types.Precision
   build-depends:       base >= 4.7 && < 5
                      , wreq
                      , lens
