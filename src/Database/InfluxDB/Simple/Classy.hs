@@ -1,5 +1,4 @@
 {-# LANGUAGE OverloadedStrings     #-}
-{-# LANGUAGE TemplateHaskell       #-}
 module Database.InfluxDB.Simple.Classy
   ( writeData
   , queryData
@@ -22,6 +21,7 @@ import qualified Network.Wreq                          as W
 
 import           Database.InfluxDB.Simple.Classy.Types (AsInfluxDbError (..),
                                                         CanInflux,
+                                                        Precision,
                                                         HasInfluxDBConfig (..),
                                                         InfluxDBConfig,
                                                         InfluxDbError (..),
@@ -74,13 +74,14 @@ writeData
      )
   => InfluxDBConfig
   -> db
+  -> Precision
   -> l
   -> m ()
-writeData c db l =
+writeData c db prec l =
   runInflux (W.postWith o (writeUrl c) (toLine l)) Write win
   where
     win = pure . const ()
-    o = basicInfluxOpts W.defaults c db
+    o = basicInfluxOpts W.defaults c db prec
 
 -- |
 -- Ask Influx for some data and return any results in CSV format:
@@ -105,12 +106,13 @@ queryDataToCSV
      )
   => InfluxDBConfig
   -> db
+  -> Precision
   -> InfluxQuery
   -> m ByteString
-queryDataToCSV c db (InfluxQuery q) =
+queryDataToCSV c db prec (InfluxQuery q) =
   runInflux (W.getWith o (queryUrl c)) QueryCSV (pure . view W.responseBody)
   where
-    o = basicInfluxOpts W.defaults c db
+    o = basicInfluxOpts W.defaults c db prec
       & W.param "q" .~ [Text.decodeUtf8 q]
       & W.header "Accept" .~ ["application/csv"]
 
@@ -123,13 +125,14 @@ queryData
      )
   => InfluxDBConfig
   -> db
+  -> Precision
   -> InfluxQuery
   -> m Value
-queryData c db (InfluxQuery q) =
+queryData c db prec (InfluxQuery q) =
   runInflux (W.getWith o (queryUrl c)) Query success
   where
     success r = either (throwing _ParseError . BS8.pack)
       pure $ r ^. W.responseBody . to A.eitherDecode
 
-    o = basicInfluxOpts W.defaults c db
+    o = basicInfluxOpts W.defaults c db prec
       & W.param "q" .~ [Text.decodeUtf8 q]
