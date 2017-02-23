@@ -5,6 +5,7 @@
 module Database.InfluxDB.Simple.Classy.Types.Precision
   ( Precision (..)
   , AsPrecision (..)
+  , defaultPrecision
   ) where
 
 import           Control.Lens         (Iso', Prism', makeClassyPrisms, preview,
@@ -60,3 +61,8 @@ instance AsPrecision ByteString where
 
 instance Show Precision where
   show = view (re _Precision)
+
+defaultPrecision
+  :: Precision
+defaultPrecision =
+  Seconds
