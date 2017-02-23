@@ -11,11 +11,11 @@ module Database.InfluxDB.Simple.Classy.Types
   , HasInfluxDBConfig (..)
   , InfluxDbError (..)
   , AsInfluxDbError (..)
-  , Precision (..)
-  , AsPrecision (..)
   , CanInflux
   , basicInfluxOpts
   , rqWinCode
+  , module Database.InfluxDB.Simple.Classy.Types.Precision
+  , module Database.InfluxDB.Simple.Classy.Types.InfluxTimeStamp
   ) where
 
 import           Control.Exception                               (SomeException)
@@ -44,6 +44,7 @@ import qualified Network.Wreq                                    as W
 
 import           Database.InfluxDB.Simple.Classy.Types.Precision (AsPrecision (..),
                                                                   Precision (..))
+import Database.InfluxDB.Simple.Classy.Types.InfluxTimeStamp
 -- |
 -- Used to differentiate what action we were trying to perform on the InfluxDB
 -- when an error occurred.

@@ -5,9 +5,10 @@
 module Database.InfluxDB.Simple.Classy.Types.Precision
   ( Precision (..)
   , AsPrecision (..)
+  , defaultPrecision
   ) where
 
-import           Control.Lens         (Lens', Prism', makeClassyPrisms, preview,
+import           Control.Lens         (Iso', Prism', makeClassyPrisms, preview,
                                        prism', re, view, (^?))
 
 import           Data.ByteString      (ByteString)
@@ -49,7 +50,7 @@ instance AsPrecision String where
     )
 
 {-# INLINABLE pris' #-}
-pris' :: Lens' a String -> Lens' String a -> Prism' a Precision
+pris' :: Iso' a String -> Iso' String a -> Prism' a Precision
 pris' f t = prism' (view (re _Precision . t)) (preview (f . _Precision))
 
 instance AsPrecision Text where
@@ -60,3 +61,8 @@ instance AsPrecision ByteString where
 
 instance Show Precision where
   show = view (re _Precision)
+
+defaultPrecision
+  :: Precision
+defaultPrecision =
+  Seconds

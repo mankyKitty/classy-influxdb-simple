@@ -1,5 +1,5 @@
 name:                classy-influxdb-simple
-version:             0.2.0.0
+version:             0.2.1.0
 synopsis:            Super simple InfluxDB package in Classy-MTL style
 -- description:
 homepage:            https://github.com/mankyKitty/classy-influxdb-simple#readme
@@ -18,6 +18,7 @@ library
   exposed-modules:     Database.InfluxDB.Simple.Classy
                      , Database.InfluxDB.Simple.Classy.Types
                      , Database.InfluxDB.Simple.Classy.Types.Precision
+                     , Database.InfluxDB.Simple.Classy.Types.InfluxTimeStamp
   build-depends:       base >= 4.7 && < 5
                      , wreq
                      , lens
@@ -27,6 +28,8 @@ library
                      , text
                      , async-io-either
                      , vector
+                     , time
+                     , scientific
   default-language:    Haskell2010
 
 source-repository head
